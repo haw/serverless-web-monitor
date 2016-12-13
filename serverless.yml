@@ -1,0 +1,104 @@
+service: serverless-web-monitor
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  func_prefix: ${self:service}-${self:custom.stage}
+
+provider:
+  name: aws
+  stage: dev
+  region: ap-northeast-1
+  runtime: nodejs4.3
+  memorySize: 128
+  cfLogs: true
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "lambda:InvokeFunction"
+      Resource: "arn:aws:lambda:${self:provider.region}:*:function:*"
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:*"
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:resources.Resources.SitesDynamo.Properties.TableName}"
+    - Effect: "Allow"
+      Action:
+        - "sns:Publish"
+      Resource: "${self:resources.Outputs.SitesSNSTopicArn.Value}"
+  environment:
+    SERVERLESS_PROJECT: ${self:service}
+    SERVERLESS_STAGE: ${self:custom.stage}
+
+functions:
+  dashboard:
+    handler: handler.dashboard
+    name: ${self:custom.func_prefix}-dashboard
+    description: "${self:service}: Show dashboard page as a static html"
+    events:
+      - http:
+          path: sites/dashboard
+          method: get
+          cors: true
+  register:
+    handler: handler.register
+    name: ${self:custom.func_prefix}-register
+    description: "${self:service}: Register target website to DynamoDB"
+    events:
+      - http:
+          path: sites/register
+          method: post
+          cors: true
+  remove:
+    handler: handler.remove
+    name: ${self:custom.func_prefix}-remove
+    description: "${self:service}: Remove target website from DynamoDB"
+    events:
+      - http:
+          path: sites/remove
+          method: post
+          cors: true
+  trigger:
+    handler: backend.trigger
+    name: ${self:custom.func_prefix}-trigger
+    description: "${self:service}: Invoke probe function"
+    environment:
+      FUNCTION_NAME_PROBE: ${self:functions.probe.name}
+    events:
+      - schedule: rate(5 minutes)
+  probe:
+    handler: backend.probe
+    name: ${self:custom.func_prefix}-probe
+    description: "${self:service}: Send http request"
+    environment:
+      FUNCTION_NAME_SNS: ${self:functions.sns.name}
+  sns:
+    handler: backend.sns
+    name: ${self:custom.func_prefix}-sns
+    description: "${self:service}: Notify when website's status is changed"
+    environment:
+      SNS_TOPIC_ARN: ${self:resources.Outputs.SitesSNSTopicArn.Value}
+
+resources:
+  Resources:
+    SitesDynamo:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:service}-sites-${self:custom.stage}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    SitesSNS:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:service}-${self:custom.stage}
+        DisplayName: "Serverless Web Monitor"
+  Outputs:
+    SitesSNSTopicArn:
+      Value:
+        Ref: SitesSNS

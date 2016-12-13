@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <title>Dashboard - Serverless Web Monitor</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <div class="navbar navbar-default navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-ex-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="./"><span>Serverless Web Monitor</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#regsite">Register Website</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Website</th>
+                  <th>StatusCode</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% sites.forEach(function(site){ %>
+                <tr data-toggle="modal" data-target="#removesite" data-id="<%= site.id%>" data-name="<%= site.name %>" data-url="<%= site.url %>">
+                  <td><%= site.name%></td>
+                  <td><%= site.url%></td>
+                  <td><%= site.code%></td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- register site Modal -->
+    <div class="modal fade" id="regsite" tabindex="-1" role="dialog" aria-labelledby="regsiteLabel">
+      <div class="modal-dialog" role="document">
+
+        <!-- Form -->
+        <form class="form-horizontal" role="form" method="POST" action="./register">
+          <!-- Modal Content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="regsiteLabel">Register Website</h4>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <div class="col-sm-2">
+                  <label for="name" class="control-label">Name:</label>
+                </div>
+                <div class="col-sm-10">
+                  <input type="text" name="name" class="form-control" id="name" placeholder="Name">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-2">
+                  <label for="site" class="control-label">URL:</label>
+                </div>
+                <div class="col-sm-10">
+                  <input type="url" name="url" class="form-control" id="url" placeholder="http://www.example.com">
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary">Register</button>
+            </div>
+          </div><!-- Modal Content -->
+        </form><!-- Form -->
+      </div>
+    </div><!-- register site Modal -->
+
+    <!-- remove site Modal -->
+    <div class="modal fade" id="removesite" tabindex="-1" role="dialog" aria-labelledby="removesiteLabel">
+      <div class="modal-dialog" role="document">
+        <!-- Form -->
+        <form role="form" method="POST" action="./remove">
+          <!-- Modal Content -->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="newsiteLabel">Remove from List</h4>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want remove this website from monitoring list?</p>
+              <p><strong id="siteinfoModal"></strong></p>
+              <input type="hidden" name="id" id="siteidModal">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-danger">Remove</button>
+            </div>
+          </div><!-- Modal Content -->
+        </div><!-- Form -->
+      </div>
+    </div><!-- remove site Modal -->
+    <script>
+    $('#removesite').on('show.bs.modal', function (event) {
+      var row = $(event.relatedTarget);
+      var id = row.data('id');
+      var name = row.data('name');
+      var url = row.data('url');
+      var modal = $(this)
+        modal.find('.modal-body input#siteidModal').val(id)
+        modal.find('.modal-body strong#siteinfoModal').text(name + " (" + url + ")")
+    });
+    </script>
+  </body>
+</html>

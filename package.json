@@ -1,0 +1,21 @@
+{
+  "name": "serverless-web-monitor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "dependencies": {
+    "ejs": "^2.5.2",
+    "fs": "^0.0.1-security",
+    "qs": "^6.3.0",
+    "request": "^2.79.0",
+    "request-promise": "^4.1.1",
+    "uuid": "^2.0.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}
