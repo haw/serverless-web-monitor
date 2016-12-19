@@ -37,7 +37,7 @@ module.exports.register = (event, context, callback) => {
   const response = {
     statusCode: 302,
     headers: {
-      'Location': './dashboard',
+      'Location': './',
     },
     body: ""
   };
@@ -58,7 +58,7 @@ module.exports.remove = (event, context, callback) => {
   const response = {
     statusCode: 302,
     headers: {
-      'Location': './dashboard',
+      'Location': './',
     },
     body: ""
   };

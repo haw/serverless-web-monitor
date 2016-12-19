@@ -56,7 +56,7 @@
       <div class="modal-dialog" role="document">
 
         <!-- Form -->
-        <form class="form-horizontal" role="form" method="POST" action="./register">
+        <form class="form-horizontal" role="form" id="register" method="POST" action="./register">
           <!-- Modal Content -->
           <div class="modal-content">
             <div class="modal-header">
@@ -94,7 +94,7 @@
     <div class="modal fade" id="removesite" tabindex="-1" role="dialog" aria-labelledby="removesiteLabel">
       <div class="modal-dialog" role="document">
         <!-- Form -->
-        <form role="form" method="POST" action="./remove">
+        <form role="form" method="POST" id="remove" action="./remove">
           <!-- Modal Content -->
           <div class="modal-content">
             <div class="modal-header">
@@ -123,6 +123,13 @@
       var modal = $(this)
         modal.find('.modal-body input#siteidModal').val(id)
         modal.find('.modal-body strong#siteinfoModal').text(name + " (" + url + ")")
+    });
+    $(function() {
+      var path = location.pathname;
+      if (path.slice(-1)=='/') var slash = '';
+      else var slash = '/';
+      $('#register').attr('action', path + slash + 'register');
+      $('#remove').attr('action', path + slash + 'remove');
     });
     </script>
   </body>
