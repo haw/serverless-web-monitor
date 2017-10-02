@@ -8,7 +8,7 @@ custom:
 provider:
   name: aws
   runtime: nodejs6.10
-  region: ap-southeast-2
+  region: ${env:AWS_DEFAULT_REGION}
   memorySize: 128
   cfLogs: true
   iamRoleStatements:
@@ -28,7 +28,7 @@ provider:
     SERVERLESS_PROJECT: ${self:service}
     SERVERLESS_STAGE: ${self:custom.stage}
   #apiKeys:
-  #  - some-api-key-name
+  #  - ${self:service}-${self:custom.stage}
 
 functions:
   dashboard:
