@@ -24,7 +24,7 @@ See: [Serverless Framework Documentation](http://docs.serverless.com)
 ```
 $ git clone https://github.com/haw-itn/serverless-web-monitor.git
 $ cd serverless-web-monitor
-$ export AWS_DEFAULT_REGION=ap-southeast-2
+$ export AWS_REGION=ap-southeast-2
 $ npm install
 $ sls deploy
 ```
